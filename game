@@ -1,1 +1,362 @@
+var currentScene;
+var xPos = random(50,350);
+var yPos = 50;
+var Xspeed = random(3, 6);
+var Yspeed = random(4, 6);
+var xSpeed = 5;
+var score = 0;
+var Ax = 121;
+var sColor =255;
+//ball function
+var ball = function(xPos, yPos) {
+    this.x = xPos;
+    this.y = yPos;
+};
 
+ball.prototype.draw = function() {
+    ellipse(xPos, yPos, 30,30);
+};
+
+
+
+ball.prototype.wallbounce = function() {
+    if (xPos > 390 || xPos < 15) {
+        Xspeed = -Xspeed + 0.25;
+    } else if (yPos < 15) {
+        Yspeed = -Yspeed + 0.5;
+    } 
+};
+
+//paddle function
+var Paddle = function(x) {
+    this.x = x;
+};
+//draw the paddle
+Paddle.prototype.draw = function() {
+     rect(this.x, 380, 100, 20);
+};
+//paddle movement
+Paddle.prototype.moveRight = function() {
+    this.x += xSpeed;
+};
+Paddle.prototype.moveLeft = function() {
+    this.x -= xSpeed;
+};
+//ball-paddle interaction function
+Paddle.prototype.checkforball = function() {
+    if(xPos > this.x && xPos < this.x+100){
+        if(yPos > 370 && yPos < 380){
+            Yspeed = -Yspeed;
+        }
+    }
+    if(xPos > this.x && xPos < this.x+100){
+        if(yPos > 370 && yPos < 380){
+            score++;
+        }
+    }
+};
+
+
+//paddle
+var paddle = new Paddle(140);
+var balls = new ball();
+var extraball = new ball();
+var challenge1 = new Paddle(140);
+var challenge1b = new ball();
+var drawSceneHome = function() {
+    currentScene = 1;
+    background(35, 33, 102);
+    //title
+    fill(255, 0, 0);
+    textSize(60);
+    text("PaddlePop", 55, 50);
+    //play button
+    stroke(255, 255, 255);
+    fill(255, 255, 255);
+    noFill();
+    rect(50,100, 300,125);
+    textSize(70);
+    text("Play", 135,180);
+    //help button
+    textSize(50);
+    stroke(217, 217, 39);
+    rect(105,250,175,100);
+    fill(217, 217, 39);
+    text("Help", 140, 310);
+    
+};
+
+var drawSceneHelp = function() {
+    currentScene = 2;
+    background(35, 33, 102);
+    //title
+    textSize(40);
+    text("Instructions", 100, 40);
+    //instructions
+    textSize(15);
+    text("1. Move the paddle side to side with the right and left keys", 5, 100);
+    text("2. The ball will bounce around randomly, move the paddle to hit the ball back up before it hits the bottom of the screen", 5, 150, 380, 100);
+    text("3. You will lose if it hits the bottom of the screen, try to stay alive for the longest possible time", 5, 250, 380, 100); 
+    //back button
+    stroke(55, 166, 43);
+    noFill();
+    rect(105, 285, 175,65); 
+    stroke(255, 0, 0);
+    fill(55, 166, 43);
+    textSize(55);
+    text("Back", 130, 335);
+    noFill();
+    stroke(55, 166, 43);
+    rect(5, 285, 95, 110); 
+    text("Tier", 7, 331);
+    text("list", 20, 380);
+};
+
+var drawScenePlay = function() {
+    currentScene = 3;
+    background(35, 33, 102);
+    //paddle movement
+    if (keyIsPressed && keyCode === 39) {
+        paddle.moveRight();
+    } else if (keyIsPressed && keyCode === 37) {
+        paddle.moveLeft();
+    }
+    
+    //ball
+    balls.draw(random(50,350), 50);
+    //ball bouncing on wall
+    balls.wallbounce();
+    //ball bouncing on paddle
+    paddle.checkforball();
+    
+    //score
+    textSize(20);
+    text("Score: " + score, 10,20);
+    
+    //going to lose screen
+    if (yPos > 400) {
+        noFill();
+        rect(105,250,175,77);
+        textSize(50);
+        text("Next", 140, 310);
+    }
+    fill(217, 217, 39);
+    
+    
+    //ball movement
+    xPos += Xspeed;
+    yPos += Yspeed;
+    
+    //paddle
+    paddle.draw();
+    
+};
+
+
+var drawSceneF = function() {
+    currentScene = 4;
+    background(35, 33, 102);
+    fill(255, 0, 0);
+    textSize(70);
+    //you dies
+    text("You failed!!!", 20, 100);
+    //F tier
+    textSize(50);
+    text("F Tier", 130, 160);
+    //final score
+    textSize(30);
+    text("Final Score: " + score, 100,200); 
+    textSize(34);
+    //restart to try again
+    text("Press Restart to try again", 5, 250);
+    noStroke();
+    rect(Ax, 270, 30, 70);
+    triangle(Ax - 10, 340, Ax + 40, 340, Ax + 15, 380);
+    
+    
+};
+
+var drawSceneC = function() {
+    currentScene = 4;
+    background(35, 33, 102);
+    fill(255, 132, 0);
+    textSize(50);
+    //you dies
+    text("You can do better", 5, 90);
+    //C tier
+    textSize(50);
+    text("C Tier", 130, 160);
+    //final score
+    textSize(30);
+    text("Final Score: " + score, 100,200); 
+    textSize(34);
+    //restart to try again
+    text("Press Restart to try again", 5, 250);
+    noStroke();
+    rect(Ax, 270, 30, 70);
+    triangle(Ax - 10, 340, Ax + 40, 340, Ax + 15, 380);
+};
+
+var drawSceneB = function() {
+    currentScene = 4;
+    background(35, 33, 102);
+    fill(0, 225, 255);
+    textSize(70);
+    //you dies
+    text("You did well",10, 90);
+    //B tier
+    textSize(50);
+    text("B Tier", 130, 160);
+    //final score
+    textSize(30);
+    text("Final Score: " + score, 100,200); 
+    textSize(34);
+    //restart to try again
+    text("Press Restart to try again", 5, 250);
+    noStroke();
+    rect(Ax, 270, 30, 70);
+    triangle(Ax - 10, 340, Ax + 40, 340, Ax + 15, 380);
+};
+
+var drawSceneA = function() {
+    currentScene = 4;
+    background(35, 33, 102);
+    fill(0, 255, 115);
+    textSize(45);
+    //you dies
+    text("You're almost there",10, 90);
+    //A tier
+    textSize(50);
+    text("A Tier", 130, 160);
+    //final score
+    textSize(30);
+    text("Final Score: " + score, 100,200); 
+    textSize(34);
+    //restart to try again
+    text("Press Restart to try again", 5, 250);
+    noStroke();
+    rect(Ax, 270, 30, 70);
+    triangle(Ax - 10, 340, Ax + 40, 340, Ax + 15, 380);
+};
+
+var drawSceneS = function() {
+    currentScene = 5;
+    background(35, 33, 102);
+    fill(255, sColor, 0);
+    textSize(70);
+    //you dies
+    text("You win!!!!!!!",10, 90);
+    //S tier
+    textSize(50);
+    text("S Tier", 130, 160);
+    //final score
+    textSize(30);
+    text("Final Score: " + score, 100,200); 
+    textSize(34);
+    //restart to try again
+    text("Press Restart to try again", 5, 250);
+    noStroke();
+    rect(Ax, 270, 30, 70);
+    triangle(Ax - 10, 340, Ax + 40, 340, Ax + 15, 380);
+    //S tier color changing
+    if (sColor <= 10) {
+        sColor = 200;
+    }
+    if (sColor > 255) {
+        sColor-= 4;
+    }
+    sColor-= 4;
+    
+};
+
+var drawTierList = function() {
+    currentScene = 6;
+    background(35, 33, 102);
+    textSize(50);
+    //F tier
+    fill(255, 0, 0);
+    text("0-5", 5, 50);
+    text("F tier", 280, 50);
+    //C tier
+    fill(255, 132, 0);
+    text("6-10", 5, 125);
+    text("C tier", 275, 125);
+    //B tier
+    fill(0, 225, 255);
+    text("11-15", 5, 200);
+    text("B tier", 277, 200);
+    //A tier
+    fill(0, 255, 115);
+    text("16-20", 5, 275);
+    text("A tier", 280, 275);
+    //S tier
+    fill(255, sColor, 0);
+    text("20+", 5, 350);
+    text("S tier", 280, 350);
+    //S tier color changing
+    if (sColor <= 10) {
+        sColor = 200;
+    }
+    if (sColor > 255) {
+        sColor-= 4;
+    }
+    sColor-= 4;
+};
+
+
+
+draw = function() {
+    if (currentScene === 3) {
+        drawScenePlay();
+    } else if (currentScene === 5) {
+        drawSceneS();
+    } else if (currentScene === 6) {
+        drawTierList();
+    }
+};
+
+drawSceneHome();
+//drawSceneHelp();
+//drawScenePlay();
+//drawSceneF();
+//drawSceneC();
+//drawSceneB();
+//drawSceneA();
+//drawSceneS();
+//drawTierList();
+mouseClicked = function() {
+    //if you click on the help button it will bring you to the help page
+    if (mouseX > 105 && mouseX < 275 && mouseY > 250 && mouseY < 350) {
+        if (currentScene === 1) {
+            drawSceneHelp();
+        //if you press the back button it will bring you to the home page
+        } else if (currentScene === 2) {
+            drawSceneHome();
+        } 
+        
+        
+        //if you press the play button you will go to the game
+    } else if (mouseX > 50 && mouseX < 350 && mouseY > 100 && mouseY < 225) {
+        if (currentScene === 1) {
+            drawScenePlay();
+        } 
+        //show the tier list
+    } else if (mouseX > 5 && mouseX < 100 && mouseY > 285 && mouseY < 395 && currentScene === 2) {
+        drawTierList();
+    }
+    if (currentScene === 3 && mouseX > 105 && mouseX < 275 && mouseY > 250 && mouseY < 350 && yPos > 400) {
+        //based on the score we will go to different tier ending screens
+        if (score <= 5) {
+            drawSceneF();
+        } else if (score <= 10) {
+            drawSceneC();
+        } else if (score <= 15) {
+            drawSceneB();
+        } else if (score <= 20) {
+            drawSceneA();
+        } else if (score > 20) {
+            drawSceneS();
+        }
+    }
+    
+};
